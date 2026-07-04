@@ -186,6 +186,7 @@ async function checkSource() {
     'ddys_open_render_request_form',
     'ddys_open_frontend_assets',
     'ddys_open_nav_item',
+    'ddys-emlog-nav nav-link',
     'ddys_open_render_calendar',
     'ddys_open_render_resource_links',
     'ddys_open_is_admin_plugin_page',

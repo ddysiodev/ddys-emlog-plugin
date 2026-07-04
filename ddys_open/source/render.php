@@ -395,7 +395,7 @@ function ddys_open_nav_item()
     if (empty($settings['show_nav'])) {
         return '';
     }
-    return '<a href="' . ddys_open_attr(ddys_open_page_url('latest')) . '">低端影视</a>';
+    return '<a class="ddys-emlog-nav nav-link" href="' . ddys_open_attr(ddys_open_page_url('latest')) . '">低端影视</a>';
 }
 
 function ddys_open_print_nav_item()
