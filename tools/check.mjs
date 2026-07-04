@@ -103,8 +103,10 @@ async function checkSettingPage() {
     'ddys_admin_nonce',
     'test_connection',
     'clear_cache',
+    'ddys_open_admin_config_checks',
     'data-ddys-generator-kind',
     'data-ddys-generator-type',
+    'data-ddys-page-url',
     'data-ddys-api-url',
     'Output::ok',
     'Output::error'
@@ -154,6 +156,7 @@ async function checkSource() {
   ]) {
     assert(security.includes(fragment), `security.php missing ${fragment}`);
   }
+  assert(security.includes('Url::plugin') && security.includes('ddys_open_plugin_page_url'), 'security.php must support Emlog pretty plugin URLs.');
   for (const fragment of ['.htaccess', 'index.html']) {
     assert(bootstrap.includes(fragment), `bootstrap.php missing runtime protection marker ${fragment}`);
   }
@@ -185,6 +188,7 @@ async function checkSource() {
     'ddys_open_nav_item',
     'ddys_open_render_calendar',
     'ddys_open_render_resource_links',
+    'ddys_open_is_admin_plugin_page',
     'magnet:',
     'ed2k:',
     'thunder:'

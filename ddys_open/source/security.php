@@ -214,22 +214,30 @@ function ddys_open_plugin_url($path = '')
 function ddys_open_page_url($view = 'latest', $params = array())
 {
     $view = ddys_open_choice($view, array('latest', 'hot', 'search', 'calendar', 'movie', 'collections', 'collection', 'requests'), 'latest');
-    $query = array_merge(array('plugin' => DDYS_OPEN_EMLOG_ID, 'view' => $view), (array)$params);
+    $query = array_merge(array('view' => $view), (array)$params);
     if ($view === 'latest') {
         unset($query['view']);
     }
-    return ddys_open_append_query(ddys_open_site_root(), $query);
+    return ddys_open_append_query(ddys_open_plugin_page_url(), $query);
 }
 
 function ddys_open_endpoint_url($endpoint)
 {
     $action = $endpoint === 'request' ? 'request-submit' : 'api';
-    return ddys_open_append_query(ddys_open_site_root(), array('plugin' => DDYS_OPEN_EMLOG_ID, 'action' => $action));
+    return ddys_open_append_query(ddys_open_plugin_page_url(), array('action' => $action));
 }
 
 function ddys_open_admin_url($params = array())
 {
     return ddys_open_append_query('./plugin.php', array_merge(array('plugin' => DDYS_OPEN_EMLOG_ID), $params));
+}
+
+function ddys_open_plugin_page_url()
+{
+    if (class_exists('Url') && method_exists('Url', 'plugin')) {
+        return Url::plugin(DDYS_OPEN_EMLOG_ID);
+    }
+    return ddys_open_append_query(ddys_open_site_root(), array('plugin' => DDYS_OPEN_EMLOG_ID));
 }
 
 function ddys_open_append_query($url, $params)
@@ -354,4 +362,3 @@ function ddys_open_strlen($value)
     }
     return strlen($value);
 }
-

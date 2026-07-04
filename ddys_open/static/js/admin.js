@@ -131,7 +131,7 @@
       var page = $('[data-ddys-generator-page]', box).value;
       var value = $('[data-ddys-generator-value]', box).value;
       if (kind === 'page') {
-        output.value = buildPage(box.getAttribute('data-ddys-site-root'), tag, limit, page, value);
+        output.value = buildPage(box.getAttribute('data-ddys-page-url'), tag, limit, page, value);
       } else if (kind === 'proxy') {
         output.value = buildProxy(box.getAttribute('data-ddys-api-url'), tag, limit, page, value);
       } else {

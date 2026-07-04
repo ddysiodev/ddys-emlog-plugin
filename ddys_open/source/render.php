@@ -305,7 +305,7 @@ function ddys_open_render_search($args = array())
     $q = ddys_open_get('q', ddys_open_get('ddys_q', isset($args['q']) ? $args['q'] : ''));
     $type = ddys_open_get('type', ddys_open_get('ddys_type', isset($args['type']) ? $args['type'] : 'movie'));
     $type = ddys_open_choice($type, array('movie', 'share', 'request'), 'movie');
-    $html = '<form class="ddys-emlog-search" method="get" action="' . ddys_open_attr(ddys_open_site_root()) . '">';
+    $html = '<form class="ddys-emlog-search" method="get" action="' . ddys_open_attr(ddys_open_plugin_page_url()) . '">';
     $html .= '<input type="hidden" name="plugin" value="' . ddys_open_attr(DDYS_OPEN_EMLOG_ID) . '">';
     $html .= '<input type="hidden" name="view" value="search">';
     $html .= '<input type="search" name="q" value="' . ddys_open_attr($q) . '" placeholder="搜索低端影视">';
@@ -368,9 +368,20 @@ function ddys_open_print_frontend_assets()
 
 function ddys_open_admin_assets()
 {
+    if (!ddys_open_is_admin_plugin_page()) {
+        return '';
+    }
     $url = ddys_open_plugin_url();
     return "\n" . '<link rel="stylesheet" href="' . ddys_open_attr($url . 'static/css/admin.css?v=' . DDYS_OPEN_EMLOG_VERSION) . '">'
         . "\n" . '<script defer src="' . ddys_open_attr($url . 'static/js/admin.js?v=' . DDYS_OPEN_EMLOG_VERSION) . '"></script>';
+}
+
+function ddys_open_is_admin_plugin_page()
+{
+    if (class_exists('Input')) {
+        return stripslashes(Input::getStrVar('plugin', '')) === DDYS_OPEN_EMLOG_ID;
+    }
+    return isset($_GET['plugin']) && ddys_open_scalar($_GET['plugin']) === DDYS_OPEN_EMLOG_ID;
 }
 
 function ddys_open_print_admin_assets()

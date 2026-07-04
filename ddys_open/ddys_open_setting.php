@@ -11,6 +11,7 @@ function plugin_setting_view()
     $stats = ddys_open_cache_stats();
     $shortcodes = ddys_open_shortcodes();
     $nonce = ddys_open_nonce('admin');
+    $checks = ddys_open_admin_config_checks($settings, $stats);
     ?>
     <div class="ddys-emlog-admin">
         <div class="ddys-emlog-admin-head">
@@ -107,7 +108,13 @@ function plugin_setting_view()
                             <dt>缓存目录</dt><dd><code><?php echo ddys_open_h(ddys_open_cache_dir()); ?></code></dd>
                             <dt>缓存状态</dt><dd><?php echo $stats['writable'] ? '可写' : '不可写'; ?>，<?php echo (int)$stats['files']; ?> 个文件，<?php echo (int)$stats['expired']; ?> 个过期，<?php echo ddys_open_h(ddys_open_format_bytes($stats['size'])); ?></dd>
                             <dt>请求能力</dt><dd><?php echo function_exists('curl_init') ? 'cURL 可用' : (ini_get('allow_url_fopen') ? 'allow_url_fopen 可用' : '不可用'); ?></dd>
+                            <dt>插件页</dt><dd><code><?php echo ddys_open_h(ddys_open_plugin_page_url()); ?></code></dd>
                         </dl>
+                        <div class="ddys-emlog-check-list">
+                            <?php foreach ($checks as $check): ?>
+                                <p class="<?php echo $check['ok'] ? 'is-ok' : 'is-warning'; ?>"><?php echo ddys_open_h($check['label']); ?>：<?php echo ddys_open_h($check['message']); ?></p>
+                            <?php endforeach; ?>
+                        </div>
                         <form method="post" action="./plugin.php?plugin=ddys_open&action=save_setting" data-ddys-emlog-tool>
                             <input type="hidden" name="ddys_admin_nonce" value="<?php echo ddys_open_attr($nonce); ?>">
                             <input type="hidden" name="ddys_admin_action" value="test_connection">
@@ -125,7 +132,7 @@ function plugin_setting_view()
 
                 <section class="card shadow mb-4">
                     <div class="card-header py-3"><h2 class="h6 m-0 font-weight-bold text-primary">生成器</h2></div>
-                    <div class="card-body ddys-emlog-generator" data-ddys-site-root="<?php echo ddys_open_attr(ddys_open_site_root()); ?>" data-ddys-api-url="<?php echo ddys_open_attr(ddys_open_endpoint_url('api')); ?>">
+                    <div class="card-body ddys-emlog-generator" data-ddys-page-url="<?php echo ddys_open_attr(ddys_open_plugin_page_url()); ?>" data-ddys-api-url="<?php echo ddys_open_attr(ddys_open_endpoint_url('api')); ?>">
                         <label>输出类型</label>
                         <select class="form-control" data-ddys-generator-kind>
                             <option value="shortcode">短代码</option>
@@ -215,6 +222,37 @@ function ddys_open_format_bytes($bytes)
         return round($bytes / 1024, 2) . ' KB';
     }
     return $bytes . ' B';
+}
+
+function ddys_open_admin_config_checks($settings, $stats)
+{
+    $checks = array();
+    $checks[] = array(
+        'label' => 'API Base URL',
+        'ok' => $settings['api_base_url'] !== '' && preg_match('#^https?://#i', $settings['api_base_url']),
+        'message' => $settings['api_base_url']
+    );
+    $checks[] = array(
+        'label' => '缓存目录',
+        'ok' => !empty($stats['writable']),
+        'message' => !empty($stats['writable']) ? '可写' : '不可写，请检查 content/plugins/ddys_open/cache 权限'
+    );
+    $checks[] = array(
+        'label' => 'HTTP 请求',
+        'ok' => function_exists('curl_init') || (bool)ini_get('allow_url_fopen'),
+        'message' => function_exists('curl_init') ? 'cURL 可用' : (ini_get('allow_url_fopen') ? 'allow_url_fopen 可用' : '不可用，请开启 cURL 或 allow_url_fopen')
+    );
+    $checks[] = array(
+        'label' => '求片表单',
+        'ok' => empty($settings['enable_request_form']) || $settings['api_key'] !== '',
+        'message' => empty($settings['enable_request_form']) ? '未启用' : ($settings['api_key'] !== '' ? '已启用，API Key 已配置' : '已启用，但 API Key 未配置')
+    );
+    $checks[] = array(
+        'label' => '前台资源',
+        'ok' => !empty($settings['enable_styles']),
+        'message' => !empty($settings['enable_styles']) ? '默认样式已启用' : '默认样式关闭，请确认主题已自行处理展示样式'
+    );
+    return $checks;
 }
 
 function ddys_open_admin_ok($message)
