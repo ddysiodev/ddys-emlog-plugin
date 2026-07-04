@@ -1,0 +1,15 @@
+.env
+.env.*
+*.local
+*.log
+*.bak
+*.tmp
+*.zip
+node_modules/
+vendor/
+dist/
+build/
+ddys_open/cache/*
+!ddys_open/cache/.htaccess
+!ddys_open/cache/index.html
+
